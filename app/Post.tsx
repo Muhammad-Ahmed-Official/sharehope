@@ -1,11 +1,10 @@
-'use client'
+// // 'use client'
+// // post return promise 
+// // const data = use(post)
+// // import React, { use } from 'react'
 
-import React, { use } from 'react'
-
-export default function Post({post}: any) {
-    // post return promise 
-    // const data = use(post)
-  return (
-    <div>post</div>
-  )
-}
+// export default function Post({post}: any) {
+//   return (
+//     <div>post</div>
+//   )
+// }

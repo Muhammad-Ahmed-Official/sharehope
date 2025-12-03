@@ -1,26 +1,227 @@
+@import '@radix-ui/themes/styles.css';
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base Colors */
+  --background: 20 30% 98%;
+  --foreground: 220 25% 12%;
+
+  --primary: 168 65% 38%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 25 95% 60%;
+  --secondary-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --muted: 220 15% 92%;
+  --muted-foreground: 220 10% 45%;
+
+  --accent: 340 75% 55%;
+  --accent-foreground: 0 0% 100%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 25% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 25% 12%;
+  /* Base Colors */
+
+
+  /* Sidebar Colors */
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+   /* Sidebar Colors */
+
+
+
+  /* Form / Border /Rdaius */
+  --border: 240 6% 90%;
+  --input: 240 6% 90%;
+  --ring: 168 65% 38%; 
+ 
+  --radius: 0.5rem;
+  /* Form / Border /Rdaius */
+
+  
+  --gradient-hero: linear-gradient(135deg, hsl(25 95% 60% / 0.15) 0%, hsl(168 65% 38% / 0.1) 50%, hsl(340 75% 55% / 0.1) 100%);
+  --gradient-primary: linear-gradient(135deg, hsl(168 65% 38%) 0%, hsl(168 75% 32%) 100%);
+  --gradient-secondary: linear-gradient(135deg, hsl(25 95% 60%) 0%, hsl(25 85% 50%) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(340 75% 55%) 0%, hsl(340 65% 45%) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+
+  --shadow-soft: 0 4px 20px -2px hsl(220 25% 12% / 0.08);
+  --shadow-glow-primary: 0 8px 30px -4px hsl(168 65% 38% / 0.3);
+  --shadow-glow-secondary: 0 8px 30px -4px hsl(25 95% 60% / 0.3);
+  --shadow-glow-accent: 0 8px 30px -4px hsl(340 75% 55% / 0.3);
+
 }
+
+
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+   /* Base Colors */
+  --color-border: hsl(var(--border));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  /* Base Colors */
+
+
+  /* Sidebar Colors */
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  /* Sidebar Colors */
+
+
+  /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Typography */
+
+
+  /* Border Radius */
+  /* Form / Border /Rdaius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  /* Form / Border /Rdaius */
+
+
+
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+
+  
+
+
+
+  /* Keyframes */
+  --keyframes-accordion-down: {
+    from { height: 0 }
+    to { height: var(--radix-accordion-content-height) }
+  };
+  --keyframes-accordion-up: {
+    from { height: var(--radix-accordion-content-height) }
+    to { height: 0 }
+  };
+
+  /* Animations */
+  --animation-accordion-down: accordion-down 0.2s ease-out;
+  --animation-accordion-up: accordion-up 0.2s ease-out;
+
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+
+
+@layer utilities {
+  .text-gradient-primary {
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .text-gradient-secondary {
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    background-image: var(--gradient-secondary);
+  }
+
+  .bg-hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .bg-glass {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(20px);
+  }
+
+  .shadow-glow-primary {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .shadow-glow-secondary {
+    box-shadow: var(--shadow-glow-secondary);
+  }
+
+  .shadow-glow-accent {
+    box-shadow: var(--shadow-glow-accent);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out forwards;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+
+@layer base {
+  :where(*) {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
 }
