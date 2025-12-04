@@ -2,43 +2,38 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
-import { Heart, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Heart, Mail, Lock, ArrowRight, Eye, EyeOff, Loader } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/Label";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
+import toast from "react-hot-toast";
+import { signInSchema } from "@/schema/signInSchema";
 
 export default function SignIn() {
-  const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   email: "",
-  //   password: "",
-  // });
+  const { register, reset, handleSubmit, formState: { isSubmitting, errors} } = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
+  });
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-    
-  //   if (!formData.email || !formData.password) {
-  //     toast.error("Please fill in all fields");
-  //     return;
-  //   }
-
-  //   if (!isLogin && !formData.name) {
-  //     toast.error("Please enter your name");
-  //     return;
-  //   }
-
-  //   // Simulate auth - in production this would use Supabase
-  //   localStorage.setItem("giveai_user", JSON.stringify({
-  //     name: formData.name || "Demo User",
-  //     email: formData.email,
-  //     type: "donor",
-  //   }));
-
-  //   toast.success(isLogin ? "Welcome back!" : "Account created successfully!");
-  //   navigate("/donor-dashboard");
-  // };
+  const onSubmit = async(data: z.infer<typeof signInSchema>) => {
+    await asyncHandlerFront(
+        async() => {
+          console.log(data);
+        },
+        (error:any) => {
+          toast.error("Failed to login", error)
+        }
+    )
+    reset()
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -56,15 +51,8 @@ export default function SignIn() {
             <span className="font-display font-bold text-2xl">GiveAI</span>
           </Link>
           
-          <h1 className="font-display text-4xl font-bold mb-4">
-            {isLogin ? "Welcome Back!" : "Join the Movement"}
-          </h1>
-          <p className="text-primary-foreground/80 text-lg mb-8">
-            {isLogin 
-              ? "Continue your journey of making a difference with AI-powered giving."
-              : "Start making a difference today with intelligent, transparent donations."
-            }
-          </p>
+          <h1 className="font-display text-4xl font-bold mb-4"> Welcome Back! </h1>
+          <p className="text-primary-foreground/80 text-lg mb-8"> Start making a difference today with intelligent, transparent donations. </p>
 
           <div className="space-y-4">
             {[
@@ -90,38 +78,8 @@ export default function SignIn() {
             <span className="font-display font-bold text-xl">GiveAI</span>
           </Link>
 
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-              {isLogin ? "Sign in to your account" : "Create your account"}
-            </h2>
-            <p className="text-muted-foreground">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-primary font-medium hover:underline cursor-pointer"
-              >
-                {isLogin ? "Sign up" : "Sign in"}
-              </button>
-            </p>
-          </div>
 
-          <form  className="space-y-5">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    placeholder="John Doe"
-                    className="pl-10"
-                    // value={formData.name}
-                    // onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-              </div>
-            )}
-
+          <form onSubmit={handleSubmit(onSubmit)}  className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -131,10 +89,10 @@ export default function SignIn() {
                   type="email"
                   placeholder="you@example.com"
                   className="pl-10"
-                  // value={formData.email}
-                  // onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  {...register('email')}
                 />
               </div>
+              { errors.email && ( <p className="text-sm text-red-500">{errors.email.message}</p> ) }
             </div>
 
             <div className="space-y-2">
@@ -146,8 +104,7 @@ export default function SignIn() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="pl-10 pr-10"
-                  // value={formData.password}
-                  // onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  {...register('password')}
                 />
                 <button
                   type="button"
@@ -157,17 +114,16 @@ export default function SignIn() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              { errors.password && ( <p className="text-sm text-red-500">{errors.password.message}</p> ) }
             </div>
 
-            {isLogin && (
-              <div className="text-right">
-                <Link href='/forgot-pass'> <p className="text-sm text-primary hover:underline">  Forgot password?</p> </Link>
-              </div>
-            )}
+            <div className="text-right">
+              <Link href='/forgot-pass'> <p className="text-sm text-primary hover:underline">  Forgot password?</p> </Link>
+            </div>
 
             <Button type="submit" variant="hero" className="w-full group cursor-pointer">
-              {isLogin ? "Sign In" : "Create Account"}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {!isSubmitting ? "Sign In" : "Account Creating...."}
+              {!isSubmitting ? <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /> : <Loader className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
             </Button>
           </form>
 

@@ -6,62 +6,63 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Heart, ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
 import Link from "next/link";
-// import { useNavigate } from "react-router-dom";
-// import { toast } from "sonner";
-// import { causeCategories } from "@/data/dummyData";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { donarSchmea } from "@/schema/donarSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const steps = ["Personal Info", "Select Causes", "Preferences"];
+const causeCategories = ["Education", "Healthcare", "Environment", "Child Welfare", "Animal Welfare", "Women Empowerment", "Disaster Relief", "Elderly Care"];
+const donation = [500, 1000, 2500, 5000]
 
 export default function RegisterDonor () {
   const [currentStep, setCurrentStep] = useState(0);
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//     phone: "",
-//     causes: [] as string[],
-//     monthlyBudget: "",
-//     notifications: true,
-//   });
-  const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const { register, handleSubmit, trigger, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<z.infer<typeof donarSchmea>>({
+    resolver: zodResolver(donarSchmea),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      causes: [],
+      donation: 1
+    }
+  })
 
-//   const toggleCause = (cause: string) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       causes: prev.causes.includes(cause)
-//         ? prev.causes.filter((c) => c !== cause)
-//         : [...prev.causes, cause],
-//     }));
-//   };
+  type DonarFields = keyof z.infer<typeof donarSchmea>
 
-//   const handleNext = () => {
-//     if (currentStep === 0 && (!formData.name || !formData.email)) {
-//       toast.error("Please fill in required fields");
-//       return;
-//     }
-//     if (currentStep === 1 && formData.causes.length === 0) {
-//       toast.error("Please select at least one cause");
-//       return;
-//     }
-//     if (currentStep < steps.length - 1) {
-//       setCurrentStep(currentStep + 1);
-//     } else {
-//       handleSubmit();
-//     }
-//   };
+  const stepFields:DonarFields[][] = [
+    ["fullName", "email", "phone"],
+    ["causes"],
+    ["donation"]
+  ]
 
-  const handleSubmit = () => {
-    // setAiAnalyzing(true);
-    
-    // // Simulate AI analysis
-    // setTimeout(() => {
-    //   setAiAnalyzing(false);
-    //   localStorage.setItem("giveai_user", JSON.stringify({
-    //     ...formData,
-    //     type: "donor",
-    //   }));
-    //   toast.success("Welcome to GiveAI! Your donor profile is ready.");
-    //   navigate("/donor-dashboard");
-    // }, 2000);
+  const selectedCauses = watch("causes");
+  const selectedDonation = watch("donation");
+
+  const toggleCause = (cause:string) => {
+    if(selectedCauses.includes(cause)){
+      setValue("causes", selectedCauses.filter(c => c !== cause), { shouldValidate : true })
+    } else {
+      setValue("causes", [...selectedCauses, cause], { shouldValidate: true })
+    }
+  };
+
+  const selectDonation = (amount:number) => {
+    setValue("donation", amount, { shouldValidate: true })
+  };
+
+  const nextStep = async () => {
+    const valid = await trigger(stepFields[currentStep]);
+    if(!valid) return;
+
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const prevStep = () => setCurrentStep((prev) => prev - 1)
+
+  const onSubmit = async (data: z.infer<typeof donarSchmea>) => {
+    console.log(data)
+    reset()
   };
 
   return (
@@ -115,6 +116,7 @@ export default function RegisterDonor () {
             </div>
           </div>
 
+          <form onSubmit={handleSubmit(onSubmit)}>   
           {/* Step Content */}
           <div className="bg-card border border-border rounded-2xl p-8 shadow-soft">
             {currentStep === 0 && (
@@ -131,31 +133,24 @@ export default function RegisterDonor () {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="name">Full Name *</Label>
-                    <Input
-                      id="name"
-                      placeholder="Your full name"
-                    //   value={formData.name}
-                    //   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
+                    <Input placeholder="Your full name" type="fullName" {...register("fullName")} />
+                    {errors.fullName && (
+                      <p className="text-red-500 text-sm">{errors.fullName.message}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="you@example.com"
-                    //   value={formData.email}
-                    //   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
+                    <Input type="email" placeholder="you@example.com" {...register("email")} />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm">{errors.email.message}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="phone">Phone (Optional)</Label>
-                    <Input
-                      id="phone"
-                      placeholder="+91 98765 43210"
-                    //   value={formData.phone}
-                    //   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
+                    <Input placeholder="03001234567" {...register("phone")} />
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -173,20 +168,23 @@ export default function RegisterDonor () {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {/* {causeCategories.map((cause) => (
-                    <button
+                  {causeCategories.map((cause) => (
+                    <Button
                       key={cause}
                       onClick={() => toggleCause(cause)}
-                      className={`p-4 rounded-xl border-2 cursor-pointer text-sm font-medium transition-all ${
-                        formData.causes.includes(cause)
+                      className={`p-7 rounded-xl border-2 cursor-pointer text-sm font-medium transition-all ${
+                        selectedCauses.includes(cause)
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-border bg-card text-foreground hover:border-primary/50"
                       }`}
                     >
                       {cause}
-                    </button>
-                  ))} */}
+                    </Button>
+                  ))}
                 </div>
+                {errors.causes && (
+                  <p className="text-red-500 text-center font-semibold text-sm">{errors.causes.message}</p>
+                )}
               </div>
             )}
 
@@ -201,24 +199,30 @@ export default function RegisterDonor () {
                   </p>
                 </div>
 
-                <div>
+                {currentStep === 2 && (
+                <div className="space-y-6">
                   <Label>Monthly Giving Budget (Optional)</Label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
-                    {["₹500", "₹1000", "₹2500", "₹5000+"].map((amount) => (
-                      <button
+                    {donation.map(amount => (
+                      <Button
                         key={amount}
-                        // onClick={() => setFormData({ ...formData, monthlyBudget: amount })}
-                        // className={`p-3 rounded-xl cursor-pointer border-2 text-sm font-medium transition-all ${
-                        //   formData.monthlyBudget === amount
-                        //     ? "border-secondary bg-secondary/10 text-secondary"
-                        //     : "border-border bg-card text-foreground hover:border-secondary/50"
-                        // }`}
+                        type="button"
+                        onClick={() => selectDonation(amount)}
+                        className={`p-3 rounded-xl cursor-pointer border-2 text-sm font-medium transition-all ${
+                          selectedDonation === amount
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-card text-foreground hover:border-primary/50"
+                        }`}
                       >
-                        {amount}
-                      </button>
+                        Rs{amount}
+                      </Button>
                     ))}
                   </div>
+                  {errors.donation && (
+                    <p className="text-red-500 text-center font-semibold text-sm">{errors.donation.message}</p>
+                  )}
                 </div>
+              )}
 
                 <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                   <div className="flex items-start gap-4">
@@ -240,41 +244,27 @@ export default function RegisterDonor () {
             )}
 
             {/* Navigation */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-              {currentStep > 0 ? (
-                <Button className="cursor-pointer" variant="ghost" onClick={() => setCurrentStep(currentStep - 1)}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-              ) : (
-                <div />
-              )}
-              
-              <Button 
-                className="cursor-pointer"
-                variant="hero" 
-                // onClick={handleNext}
-                disabled={aiAnalyzing}
-              >
-                {aiAnalyzing ? (
-                  <>
-                    <Sparkles className="w-5 h-5 animate-spin" />
-                    AI Analyzing...
-                  </>
-                ) : currentStep === steps.length - 1 ? (
-                  <>
-                    Complete Setup
-                    <Check className="w-5 h-5" />
-                  </>
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                {currentStep > 0 ? (
+                  <Button type="button" variant="ghost" onClick={prevStep}>
+                    <ArrowLeft className="mr-2" /> Back
+                  </Button>
                 ) : (
-                  <>
-                    Continue
-                    <ArrowRight className="w-5 h-5" />
-                  </>
+                  <div></div>
                 )}
-              </Button>
+
+                {currentStep === steps.length - 1 ? (
+                  <Button variant="hero" size="lg"  type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <span className="flex items-center"> <Sparkles className="w-5 h-5 animate-spin" /> Verifying... </span> :  <span className="flex items-center gap-1">Submit <Check className="w-5 h-5 font-bold" /> </span>}
+                  </Button>
+                ) : (
+                  <Button  variant="hero" size="lg" type="button" onClick={nextStep}>
+                    Continue <ArrowRight className="w-5 h-5" />
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </main>
     </div>
