@@ -36,7 +36,6 @@ export default function RegisterNGO() {
       location: "",
       description: "",
       registrationNumber: "",
-      cnic: "",
       bankName: "",
       accountNumber: "",
       iban: "",
@@ -47,7 +46,7 @@ export default function RegisterNGO() {
 
   const stepFields:NgoFields[][] = [
     ["orgName", "email", "phone", "category", "location", "description"],
-    ["registrationNumber", "cnic"],
+    ["registrationNumber"],
     ["bankName", "accountNumber", "iban"],
   ];
 
@@ -229,13 +228,13 @@ export default function RegisterNGO() {
                       )}
                     </div>
 
-                    <div>
+                    {/* <div>
                       <Label>PAN / CNIC Number *</Label>
                       <Input {...register("cnic")} placeholder="e.g., 4210123456789" />
                       {errors.cnic && (
                         <p className="text-red-500 text-sm">{errors.cnic.message}</p>
                       )}
-                    </div>
+                    </div> */}
 
                     <div>
                       <Label>Upload 80G Certificate (Optional)</Label>

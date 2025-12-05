@@ -15,7 +15,7 @@ export const ngoSchema = z.object({
 
   registrationNumber: z.string().min(1, "Registration number is required"),
 
-  cnic: z.string().regex(/^[0-9]{13}$/, "CNIC must be 13 digits (e.g. 4210123456789)"),
+  // cnic: z.string().regex(/^[0-9]{13}$/, "CNIC must be 13 digits (e.g. 4210123456789)"),
 
   bankName: z.string().min(1, "Bank name is required"),
 
