@@ -219,6 +219,7 @@
     color: var(--color-foreground);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+    margin-right: 0px !important;
   }
 
   h1, h2, h3, h4, h5, h6 {

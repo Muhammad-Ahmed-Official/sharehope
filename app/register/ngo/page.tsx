@@ -13,13 +13,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
+import { apiClient } from "@/lib/apiClient";
+import { useRouter } from "next/navigation";
 
 const steps = ["Organization Info", "Verification", "Bank Details"];
 const categories = ["Education", "Health", "Environment", "Women Empowerment", "Poverty Alleviation"];
 
 export default function RegisterNGO() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(0);
-
   const {
     register,
     handleSubmit,
@@ -29,10 +31,10 @@ export default function RegisterNGO() {
   } = useForm<z.infer<typeof ngoSchema>>({
     resolver: zodResolver(ngoSchema),
     defaultValues: {
-      orgName: "",
+      ngoName: "",
       email: "",
       phone: "",
-      category: "",
+      // category: "",
       location: "",
       description: "",
       registrationNumber: "",
@@ -45,7 +47,7 @@ export default function RegisterNGO() {
   type NgoFields = keyof z.infer<typeof ngoSchema>;
 
   const stepFields:NgoFields[][] = [
-    ["orgName", "email", "phone", "category", "location", "description"],
+    ["ngoName", "email", "phone", "location", "description"],
     ["registrationNumber"],
     ["bankName", "accountNumber", "iban"],
   ];
@@ -60,37 +62,25 @@ export default function RegisterNGO() {
   const prevStep = () => setCurrentStep((prev) => prev - 1);
 
   const onSubmit = async (data: z.infer<typeof ngoSchema>) => {
+    console.log(data);
     await asyncHandlerFront(
       async() => {
-        console.log(data);
+        const response:any = await apiClient.ngoRegister(data);
+        console.log(response.data)
+        toast.success("Form submitted!")
+        if(response.data){
+          router.push("/");
+        }
       },
       (error:any) => {
         toast.error("Something went wrong", error);
       }
     )
-    toast.success("Form submitted!");
-    console.log("Final data:", data);
     reset();
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* HEADER */}
-      <header className="border-b bg-card/80 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Heart className="w-7 h-7 text-primary fill-primary/20" />
-            <span className="font-display font-bold text-lg">GiveAI</span>
-          </Link>
-
-          <Link href="/">
-            <Button variant="ghost">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          </Link>
-        </div>
-      </header>
 
       {/* MAIN */}
       <main className="container mx-auto px-4 py-12">
@@ -129,7 +119,7 @@ export default function RegisterNGO() {
           {/* FORM */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="bg-card border rounded-2xl p-8 shadow-soft">
-               <div className="text-center mb-8">
+               {currentStep === 0 && <div className="text-center mb-8">
                   <div className="w-16 h-16 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mx-auto mb-4">
                     <Building2 className="w-8 h-8" />
                   </div>
@@ -139,18 +129,18 @@ export default function RegisterNGO() {
                   <p className="text-muted-foreground">
                     Join our network of 500+ verified NGOs and connect with conscious donors.
                   </p>
-                </div>
+                </div>}
 
               {/* STEP 0 */}
               {currentStep === 0 && (
                 <div className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     
-                    <div className="md:col-span-2">
+                    <div>
                       <Label>Organization Name *</Label>
-                      <Input {...register("orgName")} placeholder="NGO name" />
-                      {errors.orgName && (
-                        <p className="text-red-500 text-sm">{errors.orgName.message}</p>
+                      <Input {...register("ngoName")} placeholder="NGO name" />
+                      {errors.ngoName && (
+                        <p className="text-red-500 text-sm">{errors.ngoName.message}</p>
                       )}
                     </div>
 
@@ -170,7 +160,7 @@ export default function RegisterNGO() {
                       )}
                     </div>
 
-                    <div>
+                    {/* <div>
                       <Label>Category *</Label>
                       <select
                         {...register("category")}
@@ -189,7 +179,7 @@ export default function RegisterNGO() {
                       {errors.category && (
                         <p className="text-red-500 text-sm">{errors.category.message}</p>
                       )}
-                    </div>
+                    </div> */}
                     <div>
                       <Label>Location *</Label>
                       <Input {...register("location")} placeholder="City, Area" />

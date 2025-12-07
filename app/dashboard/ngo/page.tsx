@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
-  Heart, LogOut, TrendingUp, Users, IndianRupee, 
+   TrendingUp, Users, IndianRupee, 
   BarChart3, Plus, Eye, Settings, ArrowUp, ArrowDown,
-  Calendar, Sparkles, Target, Building2
+  Calendar, Sparkles, Target, 
 } from "lucide-react";
 import { dummyNGOProfile, dummyNGODonations } from "@/app/dummydata";
+import Navbar from "@/components/Navbar";
 
 const MatchingStats = [
   {
@@ -31,41 +32,8 @@ const MatchingStats = [
 export default function NgoDashboard () {
   const [activeTab, setActiveTab] = useState("overview");
 
-  const handleLogout = () => {
-    localStorage.removeItem("giveai_user");
-    // navigate("/");
-    // toast.success("Logged out successfully");
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-lg sticky top-0 z-40">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <Heart className="w-7 h-7 text-primary fill-primary/20" />
-            <span className="font-display font-bold text-lg">GiveAI</span>
-          </a>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
-                <Building2 className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-medium text-foreground hidden md:block">
-                {dummyNGOProfile.name}
-              </span>
-              {dummyNGOProfile.verified && (
-                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
-                  Verified
-                </span>
-              )}
-            </div>
-            <Button className="cursor-pointer" variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Overview */}

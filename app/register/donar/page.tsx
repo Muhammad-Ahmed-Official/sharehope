@@ -4,12 +4,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Heart, ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, ArrowLeft, Check, Sparkles, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { donarSchmea } from "@/schema/donarSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
+import toast from "react-hot-toast";
+import { apiClient } from "@/lib/apiClient";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AlertDialog, Flex } from "@radix-ui/themes";
 
 const steps = ["Personal Info", "Select Causes", "Preferences"];
 const causeCategories = ["Education", "Healthcare", "Environment", "Child Welfare", "Animal Welfare", "Women Empowerment", "Disaster Relief", "Elderly Care"];
@@ -38,7 +42,7 @@ export default function RegisterDonor () {
 
   const selectedCauses = watch("causes");
   const selectedDonation = watch("donation");
-
+  const router = useRouter();
   const toggleCause = (cause:string) => {
     if(selectedCauses.includes(cause)){
       setValue("causes", selectedCauses.filter(c => c !== cause), { shouldValidate : true })
@@ -59,29 +63,54 @@ export default function RegisterDonor () {
   };
 
   const prevStep = () => setCurrentStep((prev) => prev - 1)
+  const [showThankYou, setShowThankYou] = useState(false);
+  const searchParams = useSearchParams();
+  const ngoName = searchParams.get("ngoName");
 
   const onSubmit = async (data: z.infer<typeof donarSchmea>) => {
-    console.log(data)
-    reset()
+    console.log("Final data:", data);
+    await asyncHandlerFront(
+      async() => {
+        await apiClient.donarRegister(data);
+        setShowThankYou(true);
+      },
+      (error:any) => {
+        toast.error("Something went wrong", error.message)
+      }
+    )
+    reset();
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Heart className="w-7 h-7 text-primary fill-primary/20" />
-            <span className="font-display font-bold text-lg">GiveAI</span>
-          </Link>
-          <Link href='/'>
-            <Button className="cursor-pointer" variant="ghost" >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
+
+      <AlertDialog.Root open={showThankYou} onOpenChange={setShowThankYou}>
+        <AlertDialog.Content maxWidth="400px">
+          <AlertDialog.Title className="text-green-600 font-semibold">
+            🎉 Thank You!
+          </AlertDialog.Title>
+
+          <AlertDialog.Description size="2">
+            Your donation to <b>{ngoName}</b> of 
+            <br />
+            <span className="text-primary font-semibold text-lg">
+              Rs.{selectDonation as any}{' '}
+            </span>
+            has been successfully received.
+          </AlertDialog.Description>
+
+          <Flex justify="end" mt="4">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setShowThankYou(false)
+                router.push("/dashboard/donar")
+              }}>
+              Close
             </Button>
-          </Link>
-        </div>
-      </header>
+          </Flex>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
@@ -255,7 +284,7 @@ export default function RegisterDonor () {
 
                 {currentStep === steps.length - 1 ? (
                   <Button variant="hero" size="lg"  type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? <span className="flex items-center"> <Sparkles className="w-5 h-5 animate-spin" /> Verifying... </span> :  <span className="flex items-center gap-1">Submit <Check className="w-5 h-5 font-bold" /> </span>}
+                  {isSubmitting ? <span className="flex items-center"> <Loader className="w-5 h-5 animate-spin" /> Verifying... </span> :  <span className="flex items-center gap-1">Submit <Check className="w-5 h-5 font-bold" /> </span>}
                   </Button>
                 ) : (
                   <Button  variant="hero" size="lg" type="button" onClick={nextStep}>

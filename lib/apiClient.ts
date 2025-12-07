@@ -30,12 +30,18 @@ class ApiClient {
   return response.json();
 }
 
-    async signIn(data:any){
-        return this.fetch("ngo/SignIn", {
+    async signUp(data:any){
+        return this.fetch("auth/signup", {
             method: "POST",
             body: data
         })
     };
+
+    async uniqueName(userName:string){
+        return this.fetch(`check-uni-uName?userName=${userName}`, {
+            method: 'POST',
+        });
+    }
 
 
     async ngoRegister(data: z.infer<typeof ngoSchema> ){

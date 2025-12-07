@@ -2,7 +2,7 @@ import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } fr
 
 export default function Footer(){
   return (
-    <footer className="bg-foreground text-background py-16">
+    <footer className="bg-foreground text-background pt-8 pb-2">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand */}
@@ -78,11 +78,11 @@ export default function Footer(){
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-background/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-background/10 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-background/50 text-sm">
             © 2024 GiveAI. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((link, index) => (
               <a key={index} href="#" className="text-background/50 hover:text-primary transition-colors text-sm">
                 {link}

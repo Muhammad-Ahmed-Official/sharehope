@@ -4,12 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { 
-  Heart, LogOut, Search,  Star, MapPin, Verified, 
+   Search,  Star, MapPin, Verified, 
   TrendingUp, Gift, FileText, ArrowRight, Sparkles, Users,
   BarChart3, Calendar
 } from "lucide-react";
 import { dummyNGOs, dummyDonations, dummyDonorProfile } from "@/app/dummydata";
 import AIChatBot from "@/components/AiChatbot";
+import { useRouter } from "next/navigation";
 
 const ImpactSummary = [
   {
@@ -31,6 +32,8 @@ const ImpactSummary = [
 ]
  
 export default function DonorDashboard () {
+  const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -43,34 +46,13 @@ export default function DonorDashboard () {
   });
 
   const handleDonate = (ngoName: string) => {
+    const cleanedName = ngoName.replace(/\s+/g, "");
+    router.push(`/register/donar?ngoName=${cleanedName}`);
     // toast.success(`Donation initiated for ${ngoName}! (Demo mode)`);
-  };
-
-  const handleLogout = () => {
-    // localStorage.removeItem("giveai_user");
-    // navigate("/");
-    // toast.success("Logged out successfully");
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-lg sticky top-0 z-40">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <Heart className="w-7 h-7 text-primary fill-primary/20" />
-            <span className="font-display font-bold text-lg">GiveAI</span>
-          </a>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden md:block">
-              Welcome, {dummyDonorProfile.name}
-            </span>
-            <Button className="cursor-pointer" variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Overview */}

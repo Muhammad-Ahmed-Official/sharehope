@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const ngoSchema = z.object({
-  orgName: z.string().min(3, "Organization name is required"),
+  ngoName: z.string().min(3, "Organization name is required"),
 
   email: z.email("Invalid email format"),
 
   phone: z.string().regex(/^03[0-9]{9}$/, "Phone must be a valid Pakistani number (e.g. 03001234567)"),
 
-  category: z.string().min(1, "Category is required"),
+  // category: z.string().min(1, "Category is required"),
 
   location: z.string().min(1, "Location is required"),
 

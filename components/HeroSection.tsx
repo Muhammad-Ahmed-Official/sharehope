@@ -11,10 +11,10 @@ const donationRecord = [
 
 export default  function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-hero-gradient" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: "1.5s" }} />
       <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: "3s" }} />
       
@@ -44,7 +44,7 @@ export default  function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-            <Link href="/register/donar">
+            <Link href="/dashboard/donar">
                 <Button variant="hero" className="w-full sm:w-auto group cursor-pointer">
                 <Users className="w-5 h-5" />
                 Become a Donor

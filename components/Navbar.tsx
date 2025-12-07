@@ -1,9 +1,10 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { Heart, Menu, X } from "lucide-react";
+import { Heart, LogOut, Menu, X } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const navLinks = [
@@ -15,35 +16,74 @@ const navLinks = [
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const pathName = usePathname();
+  const { data: session, status } = useSession();
+  // console.log(session, "data")
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
+    <header className="sticky w-full top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
+          {/* Logo */}  
           <Link href="/" className="flex items-center gap-2 group">
             <div className="relative">
               <Heart className="w-8 h-8 text-primary fill-primary/20 group-hover:fill-primary/40 transition-all duration-300" />
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
-              Give<span className="text-primary">AI</span>
+              Share<span className="text-primary">Hope</span>
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
+            {!session?.user.userName && <nav className="hidden md:flex items-center gap-8">
                 {navLinks.map((item, index) => (
                     <a key={index} href={item.slug} className="text-muted-foreground hover:text-foreground transition-colors font-medium" >
                     {item.label}
                     </a>
                 ))}
-            </nav>
+              </nav>
+            }
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Button className="cursor-pointer" variant="ghost" onClick={() => router.push("/SignIn")}>Sign In</Button>
-            <Button className="cursor-pointer" variant="default" onClick={() => router.push("/dashboard/donar")}>Get Started</Button>
+          {
+            (!session?.user && pathName === "/") ? (
+              <Button 
+                className="cursor-pointer px-4"
+                variant="default"
+                onClick={() => router.push("/SignIn")}
+              >
+                Sign In
+              </Button>
+            ) : null
+          }
+
+          {
+            session?.user && (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-card">
+                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-xs font-medium text-primary">
+                      {session?.user.userName?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground hidden md:block">
+                    {session.user.userName}
+                  </span>
+                </div>
+                
+                <Button 
+                  className="cursor-pointer hover:bg-accent"
+                  variant="ghost"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  LogOut
+                </Button>
+              </div>
+            )
+          }
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -65,8 +105,42 @@ export default function Navbar() {
                     </Link>
                 ))}
               <div className="flex flex-col gap-3 pt-4">
-                <Button  variant="outline" className="w-full cursor-pointer" onClick={() => router.push("/auth")}>Sign In</Button>
-                <Button variant="default" className="w-full cursor-pointer" onClick={() => router.push("/become-donor")}>Get Started</Button>
+                {
+            (!session?.user && pathName === "/") ? (
+              <Button 
+                className="cursor-pointer px-4"
+                variant="default"
+                onClick={() => router.push("/SignIn")}
+              >
+                Sign In
+              </Button>
+            ) : null
+          }
+
+          {
+            session?.user && (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-card">
+                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-xs font-medium text-primary">
+                      {session?.user.userName?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground hidden md:block">
+                    {session.user.userName}
+                  </span>
+                </div>
+                
+                <Button 
+                  className="cursor-pointer hover:bg-accent"
+                  variant="ghost"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  LogOut
+                </Button>
+              </div>
+            )
+          }
               </div>
             </nav>
           </div>

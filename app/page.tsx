@@ -1,11 +1,9 @@
 import AIFeatures from "@/components/AiFeatures";
 import CTASection from "@/components/CTASection";
 import Donars from "@/components/Donars";
-import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import HowWork from "@/components/HowWork";
 import ImpactSection from "@/components/ImpactSection";
-import Navbar from "@/components/Navbar";
 import Ngos from "@/components/Ngos";
 
 // import Image from "next/image";
@@ -91,7 +89,6 @@ import Ngos from "@/components/Ngos";
 export default function page() {
   return (
     <section>
-      <Navbar />
         <HeroSection />
         <HowWork />
         <Donars />
@@ -99,7 +96,6 @@ export default function page() {
         <AIFeatures />
         <ImpactSection />
         <CTASection />
-      <Footer />
     </section>
   )
 }

@@ -1,11 +1,19 @@
-import { NextRequest, NextResponse } from "next/server"
+import { db } from "@/lib/db";
+import { NgoTable } from "@/lib/db/schema";
+import { sendEmailNgo } from "@/lib/nodemailer";
+import { asyncHandler } from "@/utils/AsyncHandler";
+import { nextError, nextResponse } from "@/utils/Responses";
+import { NextRequest, NextResponse } from "next/server";
 
-export const asyncHandler = (fn : (req: NextRequest) => Promise<NextResponse> ) => {
-    return async (req: NextRequest) => {
-        try {
-           return await fn(req); 
-        } catch (error) {
-            return NextResponse.json( { status: 500, message: error instanceof Error ? error.message : "Internal server Error" }, { status: 500 } );
-        }
+export const POST = asyncHandler(async (request: NextRequest):Promise<NextResponse> => {
+    const body = await request.json()
+    const [data] = await db.insert(NgoTable).values(body).returning();
+    
+    const emailResponse = await sendEmailNgo(body.email, body.ngoName);
+
+    if (emailResponse) {
+      return nextResponse(200, `Email sent to ${body.email}`, data ?? null);
+    } else {
+      return nextError(500, "Failed to send email");
     }
-}
+})
