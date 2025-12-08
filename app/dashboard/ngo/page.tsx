@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
    TrendingUp, Users, IndianRupee, 
@@ -8,7 +7,7 @@ import {
   Calendar, Sparkles, Target, 
 } from "lucide-react";
 import { dummyNGOProfile, dummyNGODonations } from "@/app/dummydata";
-import Navbar from "@/components/Navbar";
+import { useDonar } from "@/contextApi/DonarContext";
 
 const MatchingStats = [
   {
@@ -29,8 +28,10 @@ const MatchingStats = [
   },
 ]
 
+
 export default function NgoDashboard () {
-  const [activeTab, setActiveTab] = useState("overview");
+  const { donarsData } = useDonar();
+  console.log(donarsData);
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,28 +64,6 @@ export default function NgoDashboard () {
               <div className="font-display text-2xl font-bold text-foreground">{stat.value}</div>
               <div className="text-sm text-muted-foreground">{stat.label}</div>
             </div>
-          ))}
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {[
-            { id: "overview", label: "Overview" },
-            { id: "donations", label: "Donations" },
-            { id: "campaigns", label: "Campaigns" },
-            { id: "analytics", label: "Analytics" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === tab.id
-                  ? "bg-secondary text-secondary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              {tab.label}
-            </button>
           ))}
         </div>
 
@@ -123,9 +102,9 @@ export default function NgoDashboard () {
                   <Calendar className="w-5 h-5 text-secondary" />
                   Recent Donations
                 </h3>
-                <Button className="cursor-pointer" variant="ghost" size="sm">
+                {/* <Button className="cursor-pointer" variant="ghost" size="sm">
                   View All
-                </Button>
+                </Button> */}
               </div>
 
               <div className="overflow-x-auto">
@@ -139,19 +118,19 @@ export default function NgoDashboard () {
                     </tr>
                   </thead>
                   <tbody>
-                    {dummyNGODonations.map((donation) => (
+                    {donarsData.map((donation) => (
                       <tr key={donation.id} className="border-b border-border last:border-0">
                         <td className="py-4 px-2">
-                          <span className="font-medium text-foreground">{donation.donorName}</span>
+                          <span className="font-medium text-foreground">{donation.fullName}</span>
                         </td>
                         <td className="py-4 px-2">
-                          <span className="text-sm text-muted-foreground">{donation.campaign}</span>
+                          <span className="text-sm text-muted-foreground">{donation.cause}</span>
                         </td>
                         <td className="py-4 px-2">
-                          <span className="text-sm text-muted-foreground">{donation.date}</span>
+                          <span className="text-sm text-muted-foreground">{donation.createdAt}</span>
                         </td>
                         <td className="py-4 px-2 text-right">
-                          <span className="font-semibold text-secondary">₹{donation.amount.toLocaleString()}</span>
+                          <span className="font-semibold text-secondary">Rs.{donation.amount}</span>
                         </td>
                       </tr>
                     ))}

@@ -1,24 +1,25 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { Heart, LogOut, Menu, X } from "lucide-react";
+import { ArrowLeft, Heart, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const navLinks = [
   { slug: "#how-it-works", label: "How It Works" },
   { slug: "#donors", label: "For Donors" },
   { slug: "#ngos", label: "For NGOs" },
+  { slug: "#impact", label: "Impact" },
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathName = usePathname();
-  const { data: session, status } = useSession();
-  // console.log(session, "data")
+  const { data: session } = useSession();
+  console.log(pathName)
 
   return (
     <header className="sticky w-full top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
@@ -36,7 +37,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-            {!session?.user.userName && <nav className="hidden md:flex items-center gap-8">
+            {(!session?.user.userName && pathName === "/") && <nav className="hidden md:flex items-center gap-8">
                 {navLinks.map((item, index) => (
                     <a key={index} href={item.slug} className="text-muted-foreground hover:text-foreground transition-colors font-medium" >
                     {item.label}
@@ -47,17 +48,19 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-          {
-            (!session?.user && pathName === "/") ? (
-              <Button 
+            {!session?.user && pathName === "/" && 
+              (<Button 
                 className="cursor-pointer px-4"
                 variant="default"
-                onClick={() => router.push("/SignIn")}
-              >
+                onClick={() => router.push("/SignIn")}>
                 Sign In
-              </Button>
-            ) : null
-          }
+              </Button>)  
+            }
+            {pathName !== "/" && pathName !== "/dashboard/ngo" && 
+                (<Button type="button" variant="ghost" onClick={() => router.push("/")}>
+                  <ArrowLeft className="mr-2" /> Back
+                </Button>)
+            }
 
           {
             session?.user && (

@@ -56,8 +56,8 @@ class ApiClient {
     };
 
     
-    async donarRegister(data: z.infer<typeof donarSchmea>){
-        return this.fetch("donar/register", {
+    async donarRegister(data: z.infer<typeof donarSchmea>, ngoId:string){
+        return this.fetch(`donar/register?ngoId=${ngoId}`, {
             method: "POST",
             body: data
         })

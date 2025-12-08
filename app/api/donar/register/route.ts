@@ -7,13 +7,14 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = asyncHandler(async (request: NextRequest): Promise<NextResponse> => {
+    const { searchParams } = new URL(request.url)
     const body = await request.json();
     const totalAmount = Number(body.donation);
     const causes: string[] = body.causes;
     const amountPerCause = totalAmount / causes.length;
-
+    const ngoId = searchParams.get("ngoId")
     // 2️⃣ Insert donation
-    const ngo = await db.select().from(NgoTable).where(eq(NgoTable.id, "5722e58a-6cfc-4d0b-abbc-5044952cfc1c")).then(res => res[0] ?? null);
+    const ngo = await db.select().from(NgoTable).where(eq(NgoTable.id, ngoId as string)).then(res => res[0] ?? null);
     if (!ngo) {
       return nextError(400, "Invalid NGO selected");
     }
@@ -24,13 +25,13 @@ export const POST = asyncHandler(async (request: NextRequest): Promise<NextRespo
         [donor] = await db.insert(DonarTable).values({ fullName: body.fullName, email: body.email, phone: body.phone }).returning();
     };
 
-    const [donation] = await db.insert(DonationTable).values({ donarId: donor.id, ngoId: "5722e58a-6cfc-4d0b-abbc-5044952cfc1c", amount: totalAmount }).returning();
+    const [donation] = await db.insert(DonationTable).values({ donarId: donor.id, ngoId, amount: totalAmount }).returning();
 
     // 3️⃣ Insert causes
     const donationCauseRows = causes.map((cause) => ({ donationId: donation.id, cause }));
     await db.insert(DonationCauseTable).values(donationCauseRows);
 
-    const emailResponse = await sendEmailDonar(body.email, body.fullName, body.orgName, totalAmount);
+    const emailResponse = await sendEmailDonar(body.email, body.fullName, ngo.ngoName, totalAmount);
 
     if (emailResponse) {
       return nextResponse(200, `Email sent to ${body.email}`);

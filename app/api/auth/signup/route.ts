@@ -7,14 +7,14 @@ import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = asyncHandler(async (request: NextRequest): Promise<NextResponse> => {
-    const { userName, email, password } = await request.json();
-    if(!userName || !email || !password) return nextResponse(400, "Missing Fields");
+    const { userName, email, password, ngoId } = await request.json();
+    if(!userName || !email || !password || !ngoId) return nextResponse(400, "Missing Fields");
 
     const existing = await db.select().from(NgoUsers).where(eq(NgoUsers.email, email)).limit(1).then((res) => res[0] ?? null);
     if (existing) return nextResponse(409, "User already exists");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [data] = await db.insert(NgoUsers).values({ userName, email, password:hashedPassword }).returning();
+    const [data] = await db.insert(NgoUsers).values({ userName, email, password:hashedPassword, ngoId }).returning();
     return nextResponse(201, "", data ?? null);
 });

@@ -13,10 +13,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
 import toast from "react-hot-toast";
 import { signInSchema } from "@/schema/signInSchema";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function SignIn() {
   const router = useRouter();
+  const params = useSearchParams();
+  
   const [showPassword, setShowPassword] = useState(false);
   const { register, reset, handleSubmit, formState: { isSubmitting, errors} } = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -25,6 +27,7 @@ export default function SignIn() {
       password: '',
     }
   });
+
 
   const onSubmit = async(data: z.infer<typeof signInSchema>) => {
     await asyncHandlerFront(
@@ -35,7 +38,7 @@ export default function SignIn() {
           password: data.password
         })
         if(result?.error) return toast.error(result.error);
-        if(result?.url) router.push('/dashboard/ngo');
+        if(result?.url) router.push(`/dashboard/ngo?ngoId=${params.get("ngoId")}`);
         },
         (error:any) => {
           toast.error("Failed to login", error)

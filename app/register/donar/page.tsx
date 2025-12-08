@@ -13,9 +13,9 @@ import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
 import toast from "react-hot-toast";
 import { apiClient } from "@/lib/apiClient";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertDialog, Flex } from "@radix-ui/themes";
+import StripeStep2 from "@/components/Stripe";
 
-const steps = ["Personal Info", "Select Causes", "Preferences"];
+const steps = ["Personal Info", "Select Causes", "Preferences", "Payment"];
 const causeCategories = ["Education", "Healthcare", "Environment", "Child Welfare", "Animal Welfare", "Women Empowerment", "Disaster Relief", "Elderly Care"];
 const donation = [500, 1000, 2500, 5000]
 
@@ -42,7 +42,7 @@ export default function RegisterDonor () {
 
   const selectedCauses = watch("causes");
   const selectedDonation = watch("donation");
-  const router = useRouter();
+  // const router = useRouter();
   const toggleCause = (cause:string) => {
     if(selectedCauses.includes(cause)){
       setValue("causes", selectedCauses.filter(c => c !== cause), { shouldValidate : true })
@@ -51,7 +51,10 @@ export default function RegisterDonor () {
     }
   };
 
+  const[money, setMoney] = useState(0)
+
   const selectDonation = (amount:number) => {
+    setMoney(amount)
     setValue("donation", amount, { shouldValidate: true })
   };
 
@@ -63,16 +66,15 @@ export default function RegisterDonor () {
   };
 
   const prevStep = () => setCurrentStep((prev) => prev - 1)
-  const [showThankYou, setShowThankYou] = useState(false);
   const searchParams = useSearchParams();
-  const ngoName = searchParams.get("ngoName");
+  const ngoId = searchParams.get("ngoId");
 
+  
   const onSubmit = async (data: z.infer<typeof donarSchmea>) => {
-    console.log("Final data:", data);
     await asyncHandlerFront(
       async() => {
-        await apiClient.donarRegister(data);
-        setShowThankYou(true);
+        await apiClient.donarRegister(data, ngoId as string);
+        nextStep()
       },
       (error:any) => {
         toast.error("Something went wrong", error.message)
@@ -81,38 +83,11 @@ export default function RegisterDonor () {
     reset();
   };
 
+
   return (
     <div className="min-h-screen bg-background">
 
-      <AlertDialog.Root open={showThankYou} onOpenChange={setShowThankYou}>
-        <AlertDialog.Content maxWidth="400px">
-          <AlertDialog.Title className="text-green-600 font-semibold">
-            🎉 Thank You!
-          </AlertDialog.Title>
-
-          <AlertDialog.Description size="2">
-            Your donation to <b>{ngoName}</b> of 
-            <br />
-            <span className="text-primary font-semibold text-lg">
-              Rs.{selectDonation as any}{' '}
-            </span>
-            has been successfully received.
-          </AlertDialog.Description>
-
-          <Flex justify="end" mt="4">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setShowThankYou(false)
-                router.push("/dashboard/donar")
-              }}>
-              Close
-            </Button>
-          </Flex>
-        </AlertDialog.Content>
-      </AlertDialog.Root>
-
-      <main className="container mx-auto px-4 py-12">
+       <main className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           {/* Progress */}
           <div className="mb-12">
@@ -145,7 +120,7 @@ export default function RegisterDonor () {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>   
+          {currentStep !== 3 && <form onSubmit={handleSubmit(onSubmit)}>   
           {/* Step Content */}
           <div className="bg-card border border-border rounded-2xl p-8 shadow-soft">
             {currentStep === 0 && (
@@ -272,6 +247,7 @@ export default function RegisterDonor () {
               </div>
             )}
 
+
             {/* Navigation */}
               <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
                 {currentStep > 0 ? (
@@ -282,7 +258,7 @@ export default function RegisterDonor () {
                   <div></div>
                 )}
 
-                {currentStep === steps.length - 1 ? (
+                {currentStep === steps.length - 2 ? (
                   <Button variant="hero" size="lg"  type="submit" disabled={isSubmitting}>
                   {isSubmitting ? <span className="flex items-center"> <Loader className="w-5 h-5 animate-spin" /> Verifying... </span> :  <span className="flex items-center gap-1">Submit <Check className="w-5 h-5 font-bold" /> </span>}
                   </Button>
@@ -293,8 +269,13 @@ export default function RegisterDonor () {
                 )}
               </div>
             </div>
-          </form>
+          </form>}
         </div>
+          {
+            currentStep === 3 && (
+              <StripeStep2 selectedDonation={money} />
+            )
+          }
       </main>
     </div>
   );

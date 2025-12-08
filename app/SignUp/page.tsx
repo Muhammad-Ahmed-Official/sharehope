@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/Input";
 import { Heart, Mail, Lock, ArrowRight, Eye, EyeOff, Loader, User, Loader2, Check } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/Label";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,14 +16,21 @@ import { useDebounceCallback } from 'usehooks-ts';
 import { apiClient } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
 
+interface NGO {
+  id: string;
+  orgName: string;
+}
+
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
+  const [ngos, setNgos] = useState<NGO []>([]);
   const { register, reset, handleSubmit, watch, formState: { isSubmitting, errors} } = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       userName: "",
       email: "",
       password: "",
+      ngoId: "",
       isAuthorized: false,
     }
   });
@@ -34,35 +41,53 @@ export default function SignIn() {
   const router = useRouter()
   const userName = watch("userName");
 
-      const debouncedCheck = useDebounceCallback(async (value: string) => {
-      if (!value) return;
-      setIsCheckingUsername(true);
-      setUserNameMessage("");
+  const debouncedCheck = useDebounceCallback(async (value: string) => {
+    if (!value) return;
+    setIsCheckingUsername(true);
+    setUserNameMessage("");
 
-      await asyncHandlerFront(
-        async () => {
-          const res: any = await apiClient.uniqueName(value);
-          if (res.message === "userName is available") {
-            setUserNameMessage(res.message)
-          } else {
-            setUserNameMessage("userName already taken")
-          }
-        },
-        (error:any) => toast.error("Something went wrong!", error.message)
-      );
+    await asyncHandlerFront(
+      async () => {
+        const res: any = await apiClient.uniqueName(value);
+        if (res.message === "userName is available") {
+          setUserNameMessage(res.message)
+        } else {
+          setUserNameMessage("userName already taken")
+        }
+      },
+      (error:any) => toast.error("Something went wrong!", error.message)
+    );
 
-      setIsCheckingUsername(false);
-      }, 1000);
+    setIsCheckingUsername(false);
+    }, 1000);
 
-      useEffect(() => {
-      debouncedCheck(userName);
-      }, [userName]);
+    useEffect(() => {
+    debouncedCheck(userName);
+  }, [userName]);
+
+
+  const getNgo = async () => {
+    await asyncHandlerFront(
+      async() => {
+        const response:any = await apiClient.ngo();
+        setNgos(response.data);
+      },
+      (error:any) => {
+        toast.error("Something went wrong", error.message);
+      }
+    )
+  }
+
+  useEffect(() => {
+    getNgo();
+  }, [])
 
   const onSubmit = async(data: z.infer<typeof signUpSchema>) => {
     await asyncHandlerFront(
-        async() => {
+      async() => {
+        console.log(data)
          await apiClient.signUp(data);
-         router.push("/dashboard/ngo")
+         router.push(`/SignIn?ngoId=${data.ngoId}`);
         },
         (error:any) => {
           toast.error("Failed to login", error)
@@ -185,6 +210,23 @@ export default function SignIn() {
                 </button>
               </div>
               { errors.password && ( <p className="text-sm text-red-500">{errors.password.message}</p> ) }
+            </div>
+
+             <div className="space-y-2">
+              <Label htmlFor="ngoId">Select NGO</Label>
+              <select
+                {...register("ngoId", { required: "Please select an NGO" })}
+                id="ngoId"
+                className="w-full border border-border rounded-md p-3 bg-card text-card-foreground"
+              >
+                <option value="">-- Select NGO --</option>
+                {ngos.map((ngo) => (
+                  <option key={ngo.id} value={ngo.id}>
+                    {ngo.orgName}
+                  </option>
+                ))}
+              </select>
+              {errors.ngoId && <p className="text-sm text-red-500">{errors.ngoId.message}</p>}
             </div>
 
             <Button disabled={!isAuthorized || isSubmitting} type="submit" variant="hero" className="w-full group cursor-pointer">

@@ -6,20 +6,20 @@ export const NgoUsers = pgTable("NgoUsers", {
     userName: varchar("userName", { length: 255 }).notNull(),
     email: varchar("email", { length: 255 }).unique().notNull(),
     password: varchar("password", { length: 255 }).unique().notNull(),
-    // ngoId: uuid("ngoId").notNull().references(() => NgoTable.id),
+    ngoId: uuid("ngoId").notNull().references(() => NgoTable.id),
 })
 
 export const NgoTable = pgTable("Ngo", {
   id: uuid("id").primaryKey().defaultRandom(),
-  orgName: varchar("orgName", { length: 255 }).notNull().unique(),
+  ngoName: varchar("ngoName", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   phone: varchar("phone", { length: 20 }).notNull().unique(),
   location: varchar("location", { length: 255 }).notNull(),
   description: varchar("description", { length: 255 }).notNull(),
   registrationNumber: varchar("registrationNumber", { length: 255 }).notNull().unique(),
-  bankName: varchar("bankName", { length: 255 }).notNull(),
-  accountNumber: varchar("accountNumber", { length: 255 }).notNull(),
-  iban: varchar("iban", { length: 255 }).notNull(),
+//   bankName: varchar("bankName", { length: 255 }).notNull(),
+//   accountNumber: varchar("accountNumber", { length: 255 }).notNull(),
+//   iban: varchar("iban", { length: 255 }).notNull(),
 });
 
 

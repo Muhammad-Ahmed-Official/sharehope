@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
 import { Heart, ArrowRight, ArrowLeft, Check, Building2, Upload, ShieldCheck } from "lucide-react";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { ngoSchema } from "@/schema/ngoSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,8 +15,8 @@ import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
 import { apiClient } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
 
-const steps = ["Organization Info", "Verification", "Bank Details"];
-const categories = ["Education", "Health", "Environment", "Women Empowerment", "Poverty Alleviation"];
+const steps = ["Organization Info", "Verification"];
+// const categories = ["Education", "Health", "Environment", "Women Empowerment", "Poverty Alleviation"];
 
 export default function RegisterNGO() {
   const router = useRouter()
@@ -34,13 +33,9 @@ export default function RegisterNGO() {
       ngoName: "",
       email: "",
       phone: "",
-      // category: "",
       location: "",
       description: "",
       registrationNumber: "",
-      bankName: "",
-      accountNumber: "",
-      iban: "",
     }
   });
 
@@ -49,11 +44,10 @@ export default function RegisterNGO() {
   const stepFields:NgoFields[][] = [
     ["ngoName", "email", "phone", "location", "description"],
     ["registrationNumber"],
-    ["bankName", "accountNumber", "iban"],
   ];
 
   const nextStep = async () => {
-    const valid = await trigger(stepFields[currentStep]); // validate only step fields
+    const valid = await trigger(stepFields[currentStep]); 
     if (!valid) return;
 
     setCurrentStep((prev) => prev + 1);
@@ -62,7 +56,7 @@ export default function RegisterNGO() {
   const prevStep = () => setCurrentStep((prev) => prev - 1);
 
   const onSubmit = async (data: z.infer<typeof ngoSchema>) => {
-    console.log(data);
+    console.log(data)
     await asyncHandlerFront(
       async() => {
         const response:any = await apiClient.ngoRegister(data);
@@ -88,7 +82,7 @@ export default function RegisterNGO() {
 
           {/* PROGRESS STEPS */}
           <div className="mb-12">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-evenly mb-4">
               {steps.map((step, index) => (
                 <div key={index} className="flex items-center">
                   <div
@@ -100,7 +94,7 @@ export default function RegisterNGO() {
                   >
                     {index < currentStep ? <Check /> : index + 1}
                   </div>
-                  {index < steps.length - 1 && (
+                  {index < steps.length  && (
                     <div
                       className={`w-20 h-1 mx-2 rounded ${
                         index < currentStep ? "bg-secondary" : "bg-muted"
@@ -160,26 +154,6 @@ export default function RegisterNGO() {
                       )}
                     </div>
 
-                    {/* <div>
-                      <Label>Category *</Label>
-                      <select
-                        {...register("category")}
-                        className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm"
-                        defaultValue=""
-                      >
-                        <option value="" disabled>
-                          Select category
-                        </option>
-                        {categories.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.category && (
-                        <p className="text-red-500 text-sm">{errors.category.message}</p>
-                      )}
-                    </div> */}
                     <div>
                       <Label>Location *</Label>
                       <Input {...register("location")} placeholder="City, Area" />
@@ -218,13 +192,6 @@ export default function RegisterNGO() {
                       )}
                     </div>
 
-                    {/* <div>
-                      <Label>PAN / CNIC Number *</Label>
-                      <Input {...register("cnic")} placeholder="e.g., 4210123456789" />
-                      {errors.cnic && (
-                        <p className="text-red-500 text-sm">{errors.cnic.message}</p>
-                      )}
-                    </div> */}
 
                     <div>
                       <Label>Upload 80G Certificate (Optional)</Label>
@@ -249,19 +216,6 @@ export default function RegisterNGO() {
                 </div>
               )}
 
-              {/* STEP 2 */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
-                  <Label>Bank Name *</Label>
-                  <Input {...register("bankName")} placeholder="abc bank" />
-
-                  <Label>Account Number *</Label>
-                  <Input {...register("accountNumber")} placeholder="42201 4834 3922039" />
-
-                  <Label>IBAN *</Label>
-                  <Input {...register("iban")} placeholder="PK36SCBL0000001123456702" />
-                </div>
-              )}
 
               {/* NAVIGATION */}
               <div className="flex justify-between mt-8">

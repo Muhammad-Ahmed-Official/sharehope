@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { 
@@ -11,6 +11,11 @@ import {
 import { dummyNGOs, dummyDonations, dummyDonorProfile } from "@/app/dummydata";
 import AIChatBot from "@/components/AiChatbot";
 import { useRouter } from "next/navigation";
+import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
+import { apiClient } from "@/lib/apiClient";
+import toast from "react-hot-toast";
+import { NgosCardSkelton, RecentDonationSkelton } from "@/app/Skelton/Skeltons";
+import { useDonar } from "@/contextApi/DonarContext";
 
 const ImpactSummary = [
   {
@@ -30,8 +35,52 @@ const ImpactSummary = [
     number: 10
   },
 ]
- 
+
+const images = [
+  "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400",
+  "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400",
+  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400"
+];
+
+
 export default function DonorDashboard () {
+  const [ngoData, setNgoData] = useState([]);
+  // const [donarsData, setDonarsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { donarsData } = useDonar();
+
+  useEffect(() => {
+  const fetchAll = async () => {
+    setIsLoading(true);
+    await asyncHandlerFront(
+      async () => {
+        const [donarRes, ngoRes]: any = await Promise.all([
+          // apiClient.donar(),
+          apiClient.ngo()
+        ]);
+
+        // Donars
+        // setDonarsData(donarRes.data);
+
+        // NGOs with images
+        const modifiedData = ngoRes.data.map((ngo: any, index: number) => ({
+          ...ngo,
+          image: images[index % images.length]
+        }));
+        setNgoData(modifiedData);
+      },
+      (error: any) => {
+        toast.error("Something went wrong!", error.message);
+      }
+    );
+    setIsLoading(false); 
+  };
+
+  fetchAll();
+}, []);
+
+  
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,16 +88,15 @@ export default function DonorDashboard () {
 
   const categories = ["All", "Education", "Healthcare", "Environment", "Child Welfare"];
 
-  const filteredNGOs = dummyNGOs.filter((ngo:any) => {
-    const matchesSearch = ngo.name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredNGOs = ngoData.filter((ngo:any) => {
+    const matchesSearch = ngo.orgName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || ngo.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const handleDonate = (ngoName: string) => {
     const cleanedName = ngoName.replace(/\s+/g, "");
-    router.push(`/register/donar?ngoName=${cleanedName}`);
-    // toast.success(`Donation initiated for ${ngoName}! (Demo mode)`);
+    router.push(`/register/donar?ngoId=${cleanedName}`);
   };
 
   return (
@@ -134,7 +182,7 @@ export default function DonorDashboard () {
               <h3 className="font-display text-lg font-semibold text-foreground">
                 Recommended NGOs
               </h3>
-              {filteredNGOs.map((ngo:any) => (
+              {isLoading ? <NgosCardSkelton /> : filteredNGOs.length > 0 ? filteredNGOs.map((ngo:any) => (
                 <div
                   key={ngo.id}
                   className="bg-card border border-border rounded-2xl p-5 shadow-soft hover:shadow-glow-primary/10 transition-all"
@@ -150,26 +198,24 @@ export default function DonorDashboard () {
                         <div>
                           <div className="flex items-center gap-2">
                             <h4 className="font-display font-semibold text-foreground truncate">
-                              {ngo.name}
+                              {ngo.orgName}
                             </h4>
-                            {ngo.verified && (
-                              <Verified className="w-4 h-4 text-primary shrink-0" />
-                            )}
+                            <Verified className="w-4 h-4 text-primary shrink-0" />
                           </div>
                           <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
                               {ngo.location}
                             </span>
-                            <span className="flex items-center gap-1">
+                            {/* <span className="flex items-center gap-1">
                               <Star className="w-3 h-3 fill-secondary text-secondary" />
                               {ngo.rating}
-                            </span>
+                            </span> */}
                           </div>
                         </div>
-                        <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium shrink-0">
+                        {/* <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium shrink-0">
                           {ngo.aiMatchScore}% Match
-                        </div>
+                        </div> */}
                       </div>
                       <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                         {ngo.description}
@@ -178,47 +224,50 @@ export default function DonorDashboard () {
                         <div className="text-sm">
                           <span className="text-muted-foreground">Raised: </span>
                           <span className="font-semibold text-foreground">
-                            ₹{(ngo.totalRaised / 100000).toFixed(1)}L
+                            Rs 3200000
                           </span>
-                          <span className="text-muted-foreground"> / ₹{(ngo.goal / 100000).toFixed(1)}L</span>
+                          <span className="text-muted-foreground"> / 
+                            Rs 4000000
+                          </span>
                         </div>
-                        <Button className="cursor-pointer" size="sm" onClick={() => handleDonate(ngo.name)}>
+                        <Button className="cursor-pointer" size="sm" onClick={() => handleDonate(ngo.id)}>
                           Donate Now
                         </Button>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : <div className="text-center text-muted-foreground py-10">No NGOs available currently.</div> 
+              }
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
             {/* Recent Donations */}
             <div className="bg-card border border-border rounded-2xl p-5 shadow-soft">
               <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Recent Donations
+                <Calendar className="w-5 h-5 text-primary" /> Recent Donations
               </h3>
               <div className="space-y-4">
-                {dummyDonations.slice(0, 3).map((donation:any) => (
+                {isLoading ? <RecentDonationSkelton /> : donarsData.length > 0 ? donarsData.map((donation:any) => (
                   <div key={donation.id} className="flex items-start justify-between pb-4 border-b border-border last:border-0 last:pb-0">
                     <div>
                       <p className="font-medium text-foreground text-sm">{donation.ngoName}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{donation.impact}</p>
-                      <p className="text-xs text-muted-foreground">{donation.date}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {/* {donation.impact} */}
+                        Provided meals to 50 children for a month
+                      </p>
+                      <p className="text-xs text-muted-foreground">{donation.createdAt}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-primary">₹{donation.amount.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">{donation.receiptId}</p>
+                      <p className="font-semibold text-primary">Rs.{donation.amount}</p>
+                      {/* <p className="text-xs text-muted-foreground">{donation.receiptId}</p> */}
                     </div>
                   </div>
-                ))}
+                )) : 
+                  <div className="text-center text-muted-foreground">No donors yet. Be the first to donate!</div>
+              }
               </div>
-              <Button variant="ghost" className="w-full mt-4 cursor-pointer">
-                View All Donations
-              </Button>
             </div>
 
             {/* Impact Summary */}

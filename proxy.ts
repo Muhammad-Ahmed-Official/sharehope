@@ -11,12 +11,12 @@ export default withAuth(
                 const {pathname} = req.nextUrl;
 
                 // allow auth related routes
-                if( pathname.startsWith("/api/auth") || pathname === "/SignIn" || pathname === "/SignUp" || pathname === "/forgot" || pathname.startsWith("/api/donar") || pathname.startsWith("/change-pass") || pathname.startsWith("/api/ngo") || pathname.startsWith("/api/verify")){
+                if( pathname.startsWith("/api/auth") || pathname === "/SignIn" || pathname === "/SignUp" || pathname === "/forgot" || pathname.startsWith("/api/donar") || pathname.startsWith("/change-pass") || pathname.startsWith("/api/ngo") || pathname.startsWith("/api/create-checkout-session")){
                   return true;
                 }
 
                 //public
-                if(pathname === "/" || pathname.startsWith("/api/check-uni-uName") || pathname.startsWith("/dashboard") || pathname.startsWith("/register")){
+                if(pathname === "/" || pathname.startsWith("/api/check-uni-uName") || pathname.startsWith("/dashboard") || pathname.startsWith("/register") || pathname.startsWith("/payment-success")){
                   return true
                 }
 

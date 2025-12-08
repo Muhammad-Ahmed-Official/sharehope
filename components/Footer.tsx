@@ -10,7 +10,7 @@ export default function Footer(){
             <a href="/" className="flex items-center gap-2 mb-4">
               <Heart className="w-8 h-8 text-primary fill-primary/30" />
               <span className="font-display font-bold text-xl">
-                Give<span className="text-primary">AI</span>
+                Share<span className="text-primary">Hope</span>
               </span>
             </a>
             <p className="text-background/70 text-sm mb-6">
@@ -63,15 +63,15 @@ export default function Footer(){
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-background/70 text-sm">
                 <Mail className="w-4 h-4 text-primary" />
-                hello@giveai.in
+                hello@sharehope.in
               </li>
               <li className="flex items-center gap-3 text-background/70 text-sm">
                 <Phone className="w-4 h-4 text-primary" />
-                +91 98765 43210
+                +92 98765 43210
               </li>
               <li className="flex items-start gap-3 text-background/70 text-sm">
                 <MapPin className="w-4 h-4 text-primary mt-0.5" />
-                123, Tech Park, Bangalore, Karnataka 560001
+                123, Tech Park, Karachi, Pkaistan
               </li>
             </ul>
           </div>
