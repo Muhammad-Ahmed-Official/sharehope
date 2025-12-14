@@ -12,6 +12,7 @@ const donationRecord = [
 export default  function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
       {/* Background Effects */}
       <div className="absolute inset-0 bg-hero-gradient" />
       <div className="absolute top-1/4 left-1/4 w-96 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />

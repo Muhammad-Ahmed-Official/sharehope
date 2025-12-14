@@ -1,10 +1,41 @@
-import AIFeatures from "@/components/AiFeatures";
-import CTASection from "@/components/CTASection";
-import Donars from "@/components/Donars";
 import HeroSection from "@/components/HeroSection";
 import HowWork from "@/components/HowWork";
-import ImpactSection from "@/components/ImpactSection";
+import Donars from "@/components/Donars";
 import Ngos from "@/components/Ngos";
+import AIFeatures from "@/components/AiFeatures";
+import ImpactSection from "@/components/ImpactSection";
+import CTASection from "@/components/CTASection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "NGO Donation Platform",
+  description: "Donate transparently to verified NGOs",
+};
+
+
+export default function Page() {
+  return (
+    <main>
+      <HeroSection />
+      <HowWork />
+      <Donars />
+      <Ngos />
+      <AIFeatures />
+      <ImpactSection />
+      <CTASection />
+    </main>
+  );
+}
+
+
+// export default function Page() {
+//   return (
+//     <div>
+//       <PushNotificationManager />
+//       <InstallPrompt />
+//     </div>
+//   )
+// }
 
 // import Image from "next/image";
 // import { Suspense } from "react";
@@ -84,18 +115,3 @@ import Ngos from "@/components/Ngos";
 //     </div>
 //   );
 // }
-
-
-export default function page() {
-  return (
-    <section>
-        <HeroSection />
-        <HowWork />
-        <Donars />
-        <Ngos />
-        <AIFeatures />
-        <ImpactSection />
-        <CTASection />
-    </section>
-  )
-}

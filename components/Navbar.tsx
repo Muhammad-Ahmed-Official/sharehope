@@ -6,6 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import PWAInstallButton from "./PWAInstallButton";
 
 const navLinks = [
   { slug: "#how-it-works", label: "How It Works" },
@@ -19,7 +20,6 @@ export default function Navbar() {
   const router = useRouter();
   const pathName = usePathname();
   const { data: session } = useSession();
-  console.log(pathName)
 
   return (
     <header className="sticky w-full top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
@@ -49,12 +49,17 @@ export default function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             {!session?.user && pathName === "/" && 
-              (<Button 
-                className="cursor-pointer px-4"
-                variant="default"
-                onClick={() => router.push("/SignIn")}>
-                Sign In
-              </Button>)  
+              (
+                <>
+                <Button 
+                  className="cursor-pointer px-4"
+                  variant="default"
+                  onClick={() => router.push("/SignIn")}>
+                  Sign In
+                </Button>
+                <PWAInstallButton />
+                </>
+              )  
             }
             {pathName !== "/" && pathName !== "/dashboard/ngo" && 
                 (<Button type="button" variant="ghost" onClick={() => router.push("/")}>
