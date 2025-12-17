@@ -8,6 +8,18 @@ import {
 } from "lucide-react";
 import { dummyNGOProfile, dummyNGODonations } from "@/app/dummydata";
 import { useDonar } from "@/contextApi/DonarContext";
+import { useState } from "react";
+import AccountSettingsModal from "@/components/dashboard/AccountSettingModel";
+import CreateCampaignModal from "@/components/dashboard/CreateCompaignModel";
+
+interface Campaign {
+  id?: number;
+  name: string;
+  raised: number;
+  goal: number;
+  donors: number;
+  daysLeft?: number;
+}
 
 const MatchingStats = [
   {
@@ -29,18 +41,47 @@ const MatchingStats = [
 ]
 
 
+
 export default function NgoDashboard () {
+  const [showSettings, setShowSettings] = useState(false);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([
+    { name: "School Supplies Drive", raised: 75000, goal: 100000, donors: 45, daysLeft: 15 },
+    { name: "Teacher Training Program", raised: 45000, goal: 80000, donors: 28, daysLeft: 22 },
+    { name: "Infrastructure Development", raised: 120000, goal: 200000, donors: 15, daysLeft: 8 },
+  ]);
+
+  const [showCreateCampaign, setShowCreateCampaign] = useState(false);
   const { donarsData } = useDonar();
-  console.log(donarsData);
+
+    const handleCampaignCreated = (newCampaign: any) => {
+    setCampaigns((prev:any) => [...prev, {
+      name: newCampaign.name,
+      raised: 0,
+      goal: newCampaign.goal,
+      donors: 0,
+      daysLeft: parseInt(newCampaign.duration) || 30,
+    }]);
+  };
 
   return (
     <div className="min-h-screen bg-background">
+
+      <CreateCampaignModal 
+        open={showCreateCampaign} 
+        onOpenChange={setShowCreateCampaign}
+        onCampaignCreated={handleCampaignCreated}
+      />
+
+      <AccountSettingsModal
+        open={showSettings}
+        onOpenChange={setShowSettings}
+      />
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: IndianRupee, label: "Total Raised", value: `₹${(dummyNGOProfile.totalRaised / 100000).toFixed(1)}L`, trend: "+12%", up: true, color: "secondary" },
+            { icon: IndianRupee, label: "Total Raised", value: `Rs${(dummyNGOProfile.totalRaised / 100000).toFixed(1)}L`, trend: "+12%", up: true, color: "secondary" },
             { icon: Users, label: "Total Donors", value: dummyNGOProfile.donorsCount.toString(), trend: "+8%", up: true, color: "primary" },
             { icon: Target, label: "Active Campaigns", value: dummyNGOProfile.activeCampaigns.toString(), trend: "0", up: true, color: "accent" },
             { icon: BarChart3, label: "Beneficiaries", value: dummyNGOProfile.beneficiaries.toLocaleString(), trend: "+25%", up: true, color: "secondary" },
@@ -169,8 +210,8 @@ export default function NgoDashboard () {
                       </span>
                     </div>
                     <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                      <span>₹{(campaign.raised / 1000).toFixed(0)}K raised</span>
-                      <span>Goal: ₹{(campaign.goal / 1000).toFixed(0)}K</span>
+                      <span>Rs{(campaign.raised / 1000).toFixed(0)}K raised</span>
+                      <span>Goal: Rs{(campaign.goal / 1000).toFixed(0)}K</span>
                     </div>
                   </div>
                 ))}
@@ -184,7 +225,7 @@ export default function NgoDashboard () {
             <div className="bg-card border border-border rounded-2xl p-5 shadow-soft">
               <h3 className="font-display font-semibold text-foreground mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <Button variant="secondary" className="w-full justify-start cursor-pointer">
+                <Button variant="secondary" onClick={() => setShowCreateCampaign(!showCreateCampaign)} className="w-full justify-start cursor-pointer">
                   <Plus className="w-4 h-4 mr-2" />
                   Create Campaign
                 </Button>
@@ -192,7 +233,7 @@ export default function NgoDashboard () {
                   <Eye className="w-4 h-4 mr-2" />
                   View Public Profile
                 </Button>
-                <Button variant="outline" className="w-full justify-start cursor-pointer">
+                <Button variant="outline" onClick={() => setShowSettings(!showSettings)} className="w-full justify-start cursor-pointer">
                   <Settings className="w-4 h-4 mr-2" />
                   Account Settings
                 </Button>

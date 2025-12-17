@@ -3,12 +3,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
-import { 
-   Search,  Star, MapPin, Verified, 
-  TrendingUp, Gift, FileText, ArrowRight, Sparkles, Users,
-  BarChart3, Calendar
-} from "lucide-react";
-import { dummyNGOs, dummyDonations, dummyDonorProfile } from "@/app/dummydata";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import {  Search, MapPin, Verified, TrendingUp, Gift, FileText, ArrowRight, Sparkles, Users, BarChart3, Calendar, Target } from "lucide-react";
+import {  dummyDonorProfile, dummyCampaigns } from "@/app/dummydata";
 import AIChatBot from "@/components/AiChatbot";
 import { useRouter } from "next/navigation";
 import { asyncHandlerFront } from "@/utils/FrontAsyncHadler";
@@ -16,6 +13,8 @@ import { apiClient } from "@/lib/apiClient";
 import toast from "react-hot-toast";
 import { NgosCardSkelton, RecentDonationSkelton } from "@/app/Skelton/Skeltons";
 import { useDonar } from "@/contextApi/DonarContext";
+import AIRecommendationsModal from "@/components/dashboard/AIReecommandationModel";
+import CampaignCard from "@/components/dashboard/CampaignCard";
 
 const ImpactSummary = [
   {
@@ -45,8 +44,9 @@ const images = [
 
 export default function DonorDashboard () {
   const [ngoData, setNgoData] = useState([]);
-  // const [donarsData, setDonarsData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [activeTab, setActiveTab] = useState("campaigns");
 
   const { donarsData } = useDonar();
 
@@ -55,14 +55,7 @@ export default function DonorDashboard () {
     setIsLoading(true);
     await asyncHandlerFront(
       async () => {
-        const [donarRes, ngoRes]: any = await Promise.all([
-          // apiClient.donar(),
-          apiClient.ngo()
-        ]);
-
-        // Donars
-        // setDonarsData(donarRes.data);
-
+        const ngoRes:any = await apiClient.ngo()
         // NGOs with images
         const modifiedData = ngoRes.data.map((ngo: any, index: number) => ({
           ...ngo,
@@ -88,9 +81,15 @@ export default function DonorDashboard () {
 
   const categories = ["All", "Education", "Healthcare", "Environment", "Child Welfare"];
 
-  const filteredNGOs = ngoData.filter((ngo:any) => {
+  const filteredNGOs:any = ngoData.filter((ngo:any) => {
     const matchesSearch = ngo.orgName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || ngo.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const filteredCampaigns = dummyCampaigns.filter((campaign) => {
+  const matchesSearch = campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) || campaign.ngoName.toLowerCase().includes(searchQuery.toLowerCase());
+  const matchesCategory = selectedCategory === "All" || campaign.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -106,10 +105,10 @@ export default function DonorDashboard () {
         {/* Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: Gift, label: "Total Donated", value: `₹${dummyDonorProfile.totalDonated.toLocaleString()}`, color: "primary" },
+            { icon: Gift, label: "Total Donated", value: `Rs${dummyDonorProfile.totalDonated.toLocaleString()}`, color: "primary" },
             { icon: Users, label: "Lives Impacted", value: dummyDonorProfile.livesImpacted.toString(), color: "secondary" },
             { icon: BarChart3, label: "Impact Score", value: dummyDonorProfile.impactScore.toString(), color: "accent" },
-            { icon: FileText, label: "Tax Saved", value: `₹${dummyDonorProfile.taxSaved.toLocaleString()}`, color: "primary" },
+            { icon: FileText, label: "Tax Saved", value: `Rs${dummyDonorProfile.taxSaved.toLocaleString()}`, color: "primary" },
           ].map((stat, index) => (
             <div key={index} className="bg-card border border-border rounded-2xl p-5 shadow-soft">
               <div className={`w-10 h-10 rounded-xl mb-3 flex items-center justify-center ${
@@ -141,7 +140,7 @@ export default function DonorDashboard () {
                   <p className="text-muted-foreground text-sm mb-4">
                     Based on your interests in {dummyDonorProfile.causes.join(" & ")}, we found 3 new verified NGOs with 90%+ match scores.
                   </p>
-                  <Button variant="default" size="sm" className="group cursor-pointer">
+                  <Button variant="default" size="sm" className="group cursor-pointer" onClick={() => setShowRecommendations(true)}>
                     View Recommendations
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -149,37 +148,76 @@ export default function DonorDashboard () {
               </div>
             </div>
 
-            {/* Search & Filter */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search NGOs..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-                      selectedCategory === cat
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="campaigns" className="flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  Active Campaigns
+                </TabsTrigger>
+                <TabsTrigger value="ngos" className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Browse NGOs
+                </TabsTrigger>
+              </TabsList>
 
-            {/* NGO Cards */}
-            <div className="space-y-4">
-              <h3 className="font-display text-lg font-semibold text-foreground">
+              {/* Search & Filter */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    placeholder={activeTab === "campaigns" ? "Search campaigns..." : "Search NGOs..."}
+                    className="pl-10"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                        selectedCategory === cat
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Campaigns Tab */}
+              <TabsContent value="campaigns" className="mt-0">
+              {/* NGO Cards */}
+                <div className="mb-4">
+                  <h3 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    Live Campaigns from Verified NGOs
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Donate directly to specific causes and track your impact in real-time
+                  </p>
+                </div>
+                
+                {filteredCampaigns.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    No campaigns found matching your criteria
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {filteredCampaigns.map((campaign) => (
+                      <CampaignCard key={campaign.id} campaign={campaign} />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* NGOs Tab */}
+              <TabsContent value="ngos" className="mt-0">
+              <div>
+                <h3 className="font-display text-lg font-semibold text-foreground">
                 Recommended NGOs
               </h3>
               {isLoading ? <NgosCardSkelton /> : filteredNGOs.length > 0 ? filteredNGOs.map((ngo:any) => (
@@ -240,6 +278,9 @@ export default function DonorDashboard () {
               )) : <div className="text-center text-muted-foreground py-10">No NGOs available currently.</div> 
               }
             </div>
+              </TabsContent>
+            </Tabs>
+
           </div>
 
           <div className="space-y-6">
@@ -293,6 +334,12 @@ export default function DonorDashboard () {
 
       {/* AI Chatbot */}
       <AIChatBot />
+
+       {/* AI Recommendations Modal */}
+      <AIRecommendationsModal 
+        isOpen={showRecommendations} 
+        onClose={() => setShowRecommendations(false)} 
+      />
     </div>
   );
 };

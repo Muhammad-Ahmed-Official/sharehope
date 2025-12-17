@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Users, Building2 } from "lucide-react";
 import Link from "next/link";
 
 const donationRecord = [
-    { value: "₹12Cr+", label: "Donations Matched" },
+    { value: "Rs12Cr+", label: "Donations Matched" },
     { value: "50K+", label: "Active Donors" },
     { value: "500+", label: "Verified NGOs" },
     { value: "98%", label: "AI Match Rate" },

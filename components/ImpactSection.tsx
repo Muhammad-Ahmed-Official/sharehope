@@ -1,10 +1,10 @@
 import { TrendingUp, School, HeartPulse, TreePine, Home } from "lucide-react";
 
 const impactAreas = [
-  { icon: School, label: "Education", amount: "₹4.2 Cr", color: "primary" },
-  { icon: HeartPulse, label: "Healthcare", amount: "₹3.8 Cr", color: "secondary" },
-  { icon: TreePine, label: "Environment", amount: "₹2.1 Cr", color: "accent" },
-  { icon: Home, label: "Housing", amount: "₹1.9 Cr", color: "primary" },
+  { icon: School, label: "Education", amount: "Rs4.2 Cr", color: "primary" },
+  { icon: HeartPulse, label: "Healthcare", amount: "Rs3.8 Cr", color: "secondary" },
+  { icon: TreePine, label: "Environment", amount: "Rs2.1 Cr", color: "accent" },
+  { icon: Home, label: "Housing", amount: "Rs1.9 Cr", color: "primary" },
 ];
 
 const ImpactStats = [
