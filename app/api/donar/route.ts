@@ -8,8 +8,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = asyncHandler(async (request: NextRequest):Promise<NextResponse> => {
-    
-
     return nextResponse(200, "")
 })
 

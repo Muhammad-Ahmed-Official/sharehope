@@ -28,7 +28,7 @@ const benefits = [
 export default function Ngos() {
 
   return (
-    <section id="ngos" className="py-24 bg-muted/30 relative overflow-hidden">
+    <section id="ngos" className="py-16 bg-muted/30 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
@@ -59,7 +59,7 @@ export default function Ngos() {
 
           {/* Right Content */}
           <div className="order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary rounded-full px-4 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary rounded-full px-4 py-2 mb-4">
               <Building2 className="w-4 h-4" />
               <span className="text-sm font-medium">For NGOs</span>
             </div>
@@ -67,11 +67,11 @@ export default function Ngos() {
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
               Amplify Your Impact with AI
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-6">
               Join our network of 500+ verified NGOs. Let our AI technology connect you with the right donors and help you raise more funds with less effort.
             </p>
 
-            <div className="bg-card border border-border rounded-2xl p-6 mb-8 shadow-soft">
+            <div className="bg-card border border-border rounded-2xl p-5 mb-6 shadow-soft">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-secondary flex items-center justify-center text-background font-display font-bold">
                   3x

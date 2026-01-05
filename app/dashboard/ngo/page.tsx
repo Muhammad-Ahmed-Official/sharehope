@@ -228,11 +228,11 @@ export default function NgoDashboard () {
                 <Button variant="secondary" onClick={() => setShowCreateCampaign(!showCreateCampaign)} className="w-full justify-start cursor-pointer">
                   <Plus className="w-4 h-4 mr-2" />
                   Create Campaign
-                </Button>
-                <Button variant="outline" className="w-full justify-start cursor-pointer">
+                </Button> 
+                {/* <Button variant="outline" className="w-full justify-start cursor-pointer">
                   <Eye className="w-4 h-4 mr-2" />
                   View Public Profile
-                </Button>
+                </Button> */}
                 <Button variant="outline" onClick={() => setShowSettings(!showSettings)} className="w-full justify-start cursor-pointer">
                   <Settings className="w-4 h-4 mr-2" />
                   Account Settings

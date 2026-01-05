@@ -1,4 +1,6 @@
-import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import Image from "next/image";
+import logo from '../public/logo.png'
 
 export default function Footer(){
   return (
@@ -8,10 +10,7 @@ export default function Footer(){
           {/* Brand */}
           <div>
             <a href="/" className="flex items-center gap-2 mb-4">
-              <Heart className="w-8 h-8 text-primary fill-primary/30" />
-              <span className="font-display font-bold text-xl">
-                Share<span className="text-primary">Hope</span>
-              </span>
+              <Image src={logo} alt="logo" height={95} width={95} />
             </a>
             <p className="text-background/70 text-sm mb-6">
               Pakistan's first AI-powered donation platform connecting donors with verified NGOs for maximum social impact.

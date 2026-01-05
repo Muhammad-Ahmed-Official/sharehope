@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main>
+    <>
       <HeroSection />
       <HowWork />
       <Donars />
@@ -23,7 +23,7 @@ export default function Page() {
       <AIFeatures />
       <ImpactSection />
       <CTASection />
-    </main>
+    </>
   );
 }
 

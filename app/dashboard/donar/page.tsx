@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import {  Search, MapPin, Verified, TrendingUp, Gift, FileText, ArrowRight, Sparkles, Users, BarChart3, Calendar, Target } from "lucide-react";
+import {  Search, MapPin, Verified, TrendingUp, Gift, FileText, ArrowRight, Sparkles, Users, BarChart3, Calendar, Target, Bot } from "lucide-react";
 import {  dummyDonorProfile, dummyCampaigns } from "@/app/dummydata";
 import AIChatBot from "@/components/AiChatbot";
 import { useRouter } from "next/navigation";
@@ -47,6 +47,7 @@ export default function DonorDashboard () {
   const [isLoading, setIsLoading] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [activeTab, setActiveTab] = useState("campaigns");
+  const [stats, setStats] = useState<any>('')
 
   const { donarsData } = useDonar();
 
@@ -70,10 +71,24 @@ export default function DonorDashboard () {
     setIsLoading(false); 
   };
 
-  fetchAll();
+  fetchAll(); 
+
+
+  const fetchStats = async() => {
+    await asyncHandlerFront(
+      async () => {
+        const stats:any = await apiClient.ngoStats();
+        setStats(stats.data);
+      },
+      (error) => toast.error(error.message)
+    )
+  }
+
+  fetchStats()
+
+
 }, []);
 
-  
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -103,12 +118,12 @@ export default function DonorDashboard () {
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {[
-            { icon: Gift, label: "Total Donated", value: `Rs${dummyDonorProfile.totalDonated.toLocaleString()}`, color: "primary" },
-            { icon: Users, label: "Lives Impacted", value: dummyDonorProfile.livesImpacted.toString(), color: "secondary" },
-            { icon: BarChart3, label: "Impact Score", value: dummyDonorProfile.impactScore.toString(), color: "accent" },
-            { icon: FileText, label: "Tax Saved", value: `Rs${dummyDonorProfile.taxSaved.toLocaleString()}`, color: "primary" },
+            { icon: Gift, label: "Total Donated", value: `Rs${stats?.totalDonation}`, color: "primary" },
+            { icon: Users, label: "Total Ngos", value: stats.totalNgo, color: "secondary" },
+            { icon: Target, label: "Total Active campaigns", value: dummyDonorProfile.impactScore.toString(), color: "accent" },
+            // { icon: FileText, label: "Tax Saved", value: `Rs${dummyDonorProfile.taxSaved.toLocaleString()}`, color: "primary" },
           ].map((stat, index) => (
             <div key={index} className="bg-card border border-border rounded-2xl p-5 shadow-soft">
               <div className={`w-10 h-10 rounded-xl mb-3 flex items-center justify-center ${
@@ -131,7 +146,7 @@ export default function DonorDashboard () {
             <div className="bg-linear-to-r from-primary/10 via-secondary/10 to-accent/10 border border-border rounded-2xl p-6">
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-primary/20 text-primary flex items-center justify-center shrink-0">
-                  <Sparkles className="w-7 h-7" />
+                  <Bot className="w-7 h-7" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-1">
@@ -193,7 +208,7 @@ export default function DonorDashboard () {
               {/* NGO Cards */}
                 <div className="mb-4">
                   <h3 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
+                    <Bot className="w-5 h-5 text-primary" />
                     Live Campaigns from Verified NGOs
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">

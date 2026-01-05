@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { DonarTable, NgoTable } from "@/lib/db/schema";
+import { NgoTable } from "@/lib/db/schema";
 import { asyncHandler } from "@/utils/AsyncHandler";
 import { nextResponse } from "@/utils/Responses";
 import { NextRequest, NextResponse } from "next/server";

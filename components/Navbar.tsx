@@ -1,11 +1,13 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Heart, Menu, X } from "lucide-react";
+import { ArrowLeft, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import logo from '../public/logo.png'
+import Image from "next/image";
 
 const navLinks = [
   { slug: "#how-it-works", label: "How It Works" },
@@ -26,13 +28,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}  
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <Heart className="w-8 h-8 text-primary fill-primary/20 group-hover:fill-primary/40 transition-all duration-300" />
-              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <span className="font-display font-bold text-xl text-foreground">
-              Share<span className="text-primary">Hope</span>
-            </span>
+            <Image src={logo} alt="logo" height={95} width={95} />
           </Link>
 
           {/* Desktop Navigation */}

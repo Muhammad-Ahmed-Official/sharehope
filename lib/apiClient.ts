@@ -55,6 +55,10 @@ class ApiClient {
         return this.fetch("ngo")
     };
 
+    async ngoStats(){
+        return this.fetch('ngo/stats')
+    }
+
     
     async donarRegister(data: z.infer<typeof donarSchmea>, ngoId:string){
         return this.fetch(`donar/register?ngoId=${ngoId}`, {
@@ -66,5 +70,7 @@ class ApiClient {
     async donar(){
         return this.fetch("donar")
     };
+
+
 }
 export const apiClient = new ApiClient();

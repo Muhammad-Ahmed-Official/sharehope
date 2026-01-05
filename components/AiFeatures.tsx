@@ -1,4 +1,4 @@
-import { Sparkles, MessageSquare, LineChart, ShieldCheck, Fingerprint, Lightbulb } from "lucide-react";
+import { Sparkles, MessageSquare, LineChart, ShieldCheck, Fingerprint, Lightbulb, Bot } from "lucide-react";
 
 const aiFeatures = [
   {
@@ -35,23 +35,23 @@ const aiFeatures = [
 
 export default function AIFeatures() {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-16 relative overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-linear-to-b from-background via-primary/5 to-background" />
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-accent/10 text-accent rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4" />
+            <Bot className="w-4 h-4" />
             <span className="text-sm font-medium">AI-Powered Features</span>
           </div>
           
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="font-display text-xl md:text-5xl font-bold text-foreground mb-4">
             Intelligence That
             <span className="text-gradient-secondary">  Amplifies Giving</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our proprietary AI technology makes GiveAI the most advanced donation platform in India.
+          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Our proprietary AI technology makes GiveAI the most advanced donation platform in Pakistan.
           </p>
         </div>
 

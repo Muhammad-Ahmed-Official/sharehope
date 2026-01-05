@@ -29,7 +29,7 @@ const steps = [
 
 export default function HowWork() {
   return (
-    <section id="how-it-works" className="py-24 bg-muted/30 relative overflow-hidden">
+    <section id="how-it-works" className="p-4 py-8 bg-muted/30 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full opacity-50">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
@@ -38,10 +38,10 @@ export default function HowWork() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
-            How <span className="text-gradient-primary">GiveAI</span> Works
+          <h2 className="font-display text-xl md:text-5xl font-bold text-foreground mb-4">
+            How <span className="text-gradient-primary">AI</span> Works
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto">
             Our intelligent platform makes giving effortless, transparent, and impactful.
           </p>
         </div>
