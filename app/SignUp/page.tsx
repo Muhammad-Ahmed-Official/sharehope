@@ -38,8 +38,8 @@ export default function SignIn() {
 
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [userNameMessage, setUserNameMessage] = useState('');
-  const router = useRouter()
   const userName = watch("userName");
+  const router = useRouter()
 
   const debouncedCheck = useDebounceCallback(async (value: string) => {
     if (!value) return;

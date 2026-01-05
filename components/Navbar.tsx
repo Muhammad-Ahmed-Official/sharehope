@@ -6,7 +6,6 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import PWAInstallButton from "./PWAInstallButton";
 
 const navLinks = [
   { slug: "#how-it-works", label: "How It Works" },
@@ -57,7 +56,6 @@ export default function Navbar() {
                   onClick={() => router.push("/SignIn")}>
                   Sign In
                 </Button>
-                <PWAInstallButton />
                 </>
               )  
             }

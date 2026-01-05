@@ -20,7 +20,7 @@ class ApiClient {
     finalBody = body ? JSON.stringify(body) : undefined;
   }
 
-  const response = await fetch(`/api/${endPoint}`, {
+  const response = await fetch(`/api/${endPoint}`, {    
     method,
     headers: finalHeaders,
     body: finalBody,
